@@ -32,6 +32,18 @@ stages:
         command: 'build'
         Dockerfile: 'Dockerfile'
         tags: '$(tag)'
+- stage: Scan
+  displayName: 'Scan Image'
+  jobs:
+  - job: Scan
+    displayName: 'Scan Docker Image'
+    steps:
+    - task: CmdLine@2
+      displayName: 'Scan image with Snyk'
+      inputs:
+        script: |
+          docker pull $(containerRegistry)/$(imageRepository):$(tag)
+          snyk test --docker $(containerRegistry)/$(imageRepository):$(tag) --file=Dockerfile
 - stage: Push
   displayName: Push 
   jobs:
